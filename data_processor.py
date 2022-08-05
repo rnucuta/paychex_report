@@ -119,13 +119,13 @@ def create_report(rep_arr, paychex_addr, report_addr, d1, d2, fname=''):
 		output_msg = 'Done! Report generated for {} timesheets can be found at {}.'.format(out_items, report_addr)
 
 		if len(out_msgs)>0:
-			output_msg+=" Date outside of range in {}.".format(out_msgs)
+			output_msg+=" Date/name outside of range in {}.".format(out_msgs)
 
 		if len(out_msgz)>0:		
 			output_msg+=" No discrepancies in {}.".format(out_msgz)
 
 	elif len(out_msgs)>0:
-		output_msg="Done! Date outside of range in {}.".format(out_msgs)
+		output_msg="Done! Date/name outside of range in {}.".format(out_msgs)
 
 		if len(out_msgz)>0:		
 			output_msg+=" No discrepancies in {}.".format(out_msgz)
@@ -211,13 +211,17 @@ def convert_pd(timesheet_addr, d1, d2, type='PC', fname=''):
 		timesheet_pd.set_index('Date', inplace = True)
 
 		if fname!='':	
-			timesheet_pd=timesheet_pd.loc[(timesheet_pd['Last Name, First Name Middle Name']==fname)]
-			if len(timesheet_pd)==0:
-				for n in np.unique(report['Last Name, First Name']):
+			ts_temp=timesheet_pd.loc[(timesheet_pd['Last Name, First Name Middle Name']==fname)]
+			new_name=''
+			if len(ts_temp)==0:
+				for n in np.unique(timesheet_pd['Last Name, First Name Middle Name']):
 					if distance(n, fname)<=3:
-						fname=n
+						new_name=n
 						break
-				timesheet_pd=timesheet_pd.loc[(timesheet_pd['Last Name, First Name']==fname)]
+			if new_name!='':
+				timesheet_pd=timesheet_pd.loc[(timesheet_pd['Last Name, First Name Middle Name']==fname)]
+			else:
+				timesheet_pd=ts_temp
 
 		date_in=np.array(timesheet_pd.index)
 		date_in=[i for i in date_in if i in valid_dates]
@@ -261,13 +265,17 @@ def convert_pd(timesheet_addr, d1, d2, type='PC', fname=''):
 		timesheet_pd.set_index('Time Entry Date', inplace = True)
 
 		if fname!='':	
-			timesheet_pd=timesheet_pd.loc[(timesheet_pd['Last Name, First Name']==fname)]
-			if len(timesheet_pd)==0:
-				for n in np.unique(report['Last Name, First Name']):
+			ts_temp=timesheet_pd.loc[(timesheet_pd['Last Name, First Name']==fname)]
+			new_name=''
+			if len(ts_temp)==0:
+				for n in np.unique(timesheet_pd['Last Name, First Name']):
 					if distance(n, fname)<=3:
-						fname=n
+						new_name=n
 						break
+			if new_name!='':
 				timesheet_pd=timesheet_pd.loc[(timesheet_pd['Last Name, First Name']==fname)]
+			else:
+				timesheet_pd=ts_temp
 
 		date_in=np.array(timesheet_pd.index)
 		date_in=[i for i in date_in if i in valid_dates]
@@ -302,13 +310,17 @@ def convert_pd(timesheet_addr, d1, d2, type='PC', fname=''):
 		timesheet_pd.set_index('Date', inplace = True)
 
 		if fname!='':	
-			timesheet_pd=timesheet_pd.loc[(timesheet_pd['CW Name']==fname)]
-			if len(timesheet_pd)==0:
-				for n in np.unique(report['Last Name, First Name']):
+			ts_temp=timesheet_pd.loc[(timesheet_pd['Last Name, First Name']==fname)]
+			new_name=''
+			if len(ts_temp)==0:
+				for n in np.unique(timesheet_pd['Last Name, First Name']):
 					if distance(n, fname)<=3:
-						fname=n
+						new_name=n
 						break
+			if new_name!='':
 				timesheet_pd=timesheet_pd.loc[(timesheet_pd['Last Name, First Name']==fname)]
+			else:
+				timesheet_pd=ts_temp
 
 		date_in=np.array(timesheet_pd.index)
 		date_in=[i for i in date_in if i in valid_dates]
